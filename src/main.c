@@ -24,7 +24,7 @@ static int led_state = 0;
 
 const char html_page[] = 
     "<!DOCTYPE html><html>"
-    "<head><title>ESP32 GPIO Control</title>"
+    "<head><title>ESP32 Water Pump Control</title>"
     "<meta name='viewport' content='width=device-width, initial-scale=1'>"
     "<style>body{text-align:center;font-family:sans-serif;} .btn{padding:20px;font-size:24px;}</style></head>"
     "<body><h1>ESP32 Web Server</h1>"
