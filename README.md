@@ -4,9 +4,11 @@ After burning uot an STM32 with this project and not having an extra, this repo 
 ## Tools Utilized
 ESP32 Board (Base)
 
-MOSFET Transistor
+IRLZ44 MOSFET Transistor
 
-Various Resistors
+100Ω and 10kΩ Resistor
+
+1N4007 Diode
 
 Jumper Wires 
 
@@ -21,9 +23,9 @@ ESP32 GPIO4 → 100Ω resistor → MOSFET Gate
 
 MOSFET Source → GND (shared with ESP32 GND)
 
-MOSFET Drain → Pump (−)
+MOSFET Drain → Flyback Diode → Pump (−)
 
-Pump (+) → 12V supply (+)
+Pump (+) → Flyback Diode → 12V supply (+)
 
 12V supply (−) → same GND rail as ESP32
 
@@ -38,7 +40,10 @@ GPIO Input for the Button
 - [x] GPIO initializing 
 - [x] GPIO setup on main page
 - [x] Setup Push Button Capabilities
-- []  Setup Wifi Capabilites for app control
+- [x] Setup Wifi Capabilites for app control
+- [ ] Enable status via Web
+- [ ] Setup optional timed releases
+- [ ] 
 
 
 ## Phases

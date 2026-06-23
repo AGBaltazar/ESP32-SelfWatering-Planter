@@ -42,6 +42,7 @@ static esp_err_t root_get_handler(httpd_req_t *req) {
 static esp_err_t toggle_get_handler(httpd_req_t *req) {
     led_state = !led_state;
     gpio_set_level(PUMP_PIN, led_state);
+    gpio_set_level(LED_PIN, 0);
     ESP_LOGI(TAG, "GPIO %d toggled to: %d", PUMP_PIN, led_state);
     
     // Redirect back to the main page
