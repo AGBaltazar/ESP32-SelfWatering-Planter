@@ -43,7 +43,9 @@ GPIO Input for the Button
 - [x] Setup Wifi Capabilites for app control
 - [ ] Enable status via Web
 - [ ] Setup optional timed releases
-- [ ] 
+- [ ] Enable custom timed releases
+- [ ] Add on Buck Converter for standalone power
+- [ ] Add soil sensor for automated releases
 
 
 ## Phases
@@ -55,3 +57,8 @@ Setup timers to release water at controlled intervals such as specific times
 
 ### Phase 3
 Utilize the ESP32's built in wifi to remotely power the pump
+
+### Phase 4
+Install a DC to DC Buck Converter to allow the MCU to get power
+
+Install a Soil Sensor and allow the MCU to water when dry

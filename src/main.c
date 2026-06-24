@@ -27,8 +27,9 @@ const char html_page[] =
     "<head><title>ESP32 Water Pump Control</title>"
     "<meta name='viewport' content='width=device-width, initial-scale=1'>"
     "<style>body{text-align:center;font-family:sans-serif;} .btn{padding:20px;font-size:24px;}</style></head>"
-    "<body><h1>ESP32 Web Server</h1>"
+    "<body><h1>Water Pump Control</h1>"
     "<p><a href='/toggle'><button class='btn'>Enable Water Pump</button></a></p>"
+    "<p><a href='/toggle_five'><button class='btn'>Enable 5 Second Water Pump</button></a></p>"
     "</body></html>";
 
 
@@ -51,6 +52,22 @@ static esp_err_t toggle_get_handler(httpd_req_t *req) {
     httpd_resp_send(req, NULL, 0);
     return ESP_OK;
 };
+static esp_err_t toggle_get_handler_five(httpd_req_t *req) {
+    led_state = !led_state;
+    gpio_set_level(PUMP_PIN, led_state);
+    gpio_set_level(LED_PIN, 1);
+    ESP_LOGI(TAG, "GPIO %d toggled to: %d", PUMP_PIN, led_state);
+    vTaskDelay(pdMS_TO_TICKS(5000));  
+    gpio_set_level(PUMP_PIN, 0);
+    gpio_set_level(LED_PIN, 0);
+
+    
+    // Redirect back to the main page
+    httpd_resp_set_status(req, "303 See Other");
+    httpd_resp_set_hdr(req, "Location", "/");
+    httpd_resp_send(req, NULL, 0);
+    return ESP_OK;
+};
 
 static const httpd_uri_t root = {
     .uri       = "/",
@@ -66,6 +83,13 @@ static const httpd_uri_t toggle = {
     .user_ctx  = NULL
 };
 
+static const httpd_uri_t toggle_five = {
+    .uri       = "/toggle_five",
+    .method    = HTTP_GET,
+    .handler   = toggle_get_handler_five,
+    .user_ctx  = NULL
+};
+
 
 static httpd_handle_t start_webserver(void) {
     httpd_handle_t server = NULL;
@@ -76,6 +100,7 @@ static httpd_handle_t start_webserver(void) {
     if (httpd_start(&server, &config) == ESP_OK) {
         httpd_register_uri_handler(server, &root);
         httpd_register_uri_handler(server, &toggle);
+        httpd_register_uri_handler(server, &toggle_five);
         return server;
     }
     ESP_LOGI(TAG, "Error starting server!");
