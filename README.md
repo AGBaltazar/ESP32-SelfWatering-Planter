@@ -35,7 +35,6 @@ GPIO Output for the LED and Pump
 
 GPIO Input for the Button
 
-
 ## To Do
 - [x] GPIO initializing 
 - [x] GPIO setup on main page
@@ -46,6 +45,9 @@ GPIO Input for the Button
 - [ ] Enable custom timed releases
 - [ ] Add on Buck Converter for standalone power
 - [ ] Add soil sensor for automated releases
+- [ ] Add on I2C Light Sensor
+- [ ] Add on Display over SPI
+- [ ] Setup touch display
 
 
 ## Phases
