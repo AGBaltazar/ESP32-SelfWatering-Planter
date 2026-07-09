@@ -10,13 +10,20 @@
 #include "esp_http_server.h"
 #include "../secrets.h"
 #include "./components/wifi.h"
+#include "esp_adc/adc_oneshot.h"
 
-#define LED_PIN    GPIO_NUM_2
-#define BUTTON_PIN GPIO_NUM_0 
-#define PUMP_PIN GPIO_NUM_4
+#define LED_PIN     GPIO_NUM_2
+#define BUTTON_PIN  GPIO_NUM_0 
+#define PUMP_PIN    GPIO_NUM_4
+#define ADC_UNIT    ADC_UNIT_1
+#define ADC_CHANNEL ADC_CHANNEL_5 // Port 33 on a ESP32 Base
+#define ADC_ATTENUATION ADC_ATTEN_DB_12
+
 
 
 void app_main(void) {
+    int adc_raw;
+
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
         ESP_ERROR_CHECK(nvs_flash_erase());
@@ -24,9 +31,21 @@ void app_main(void) {
     }
     ESP_ERROR_CHECK(ret);
 
+    adc_oneshot_unit_handle_t adc_handle;
+    adc_oneshot_unit_init_cfg_t init_config = {
+        .unit_id = ADC_UNIT,
+    };
+
+    ESP_ERROR_CHECK(adc_oneshot_new_unit(&init_config, &adc_handle));
+
+    adc_oneshot_chan_cfg_t config = {
+        .bitwidth = ADC_BITWIDTH_DEFAULT,
+        .atten = ADC_ATTENUATION,
+    };
+
+    ESP_ERROR_CHECK(adc_oneshot_config_channel(adc_handle, ADC_CHANNEL, &config));
 
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
-
     gpio_set_direction(PUMP_PIN, GPIO_MODE_OUTPUT);
 
     // Button input with pull-up
@@ -74,14 +93,15 @@ void app_main(void) {
             gpio_set_level(LED_PIN, 1);
             vTaskDelay(pdMS_TO_TICKS(5000));
             gpio_set_level(PUMP_PIN, 0);
-            gpio_set_level(LED_PIN, 0);
+            gpio_set_level(LED_PIN, 0);,
             ESP_LOGI("TAG", "Watered and the current time is: %d", localUptime);
             vTaskDelay(pdMS_TO_TICKS(3600000));//Wait an hour then push the code again
-        }
-
-
-    */
-    vTaskDelay(pdMS_TO_TICKS(100000));
+        }*/
+       
+       //v4: Soil Sensor based released
+       ESP_ERROR_CHECK(adc_oneshot_read(adc_handle, ADC_CHANNEL, &adc_raw));
+       ESP_LOGI("TAG", "Current Soil Level: %d ", adc_raw);
+       vTaskDelay(pdMS_TO_TICKS(10000));
 
     }
 }
