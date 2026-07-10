@@ -18,11 +18,14 @@
 #define ADC_UNIT    ADC_UNIT_1
 #define ADC_CHANNEL ADC_CHANNEL_5 // Port 33 on a ESP32 Base
 #define ADC_ATTENUATION ADC_ATTEN_DB_12
-
+#define LOW_WET     1100 //The lowest value the sensor can read meaning its submerged  
+#define MAX_DRY     3280 //The max value the sensor can read, a high value means dry soil
+#define SENSOR_DIFF 2180 //Difference betweene the Max-low used to calculate eprcentage
 
 
 void app_main(void) {
-    int adc_raw;
+    int soil_raw;
+    int32_t percentage_sensor;
 
     esp_err_t ret = nvs_flash_init();
     if (ret == ESP_ERR_NVS_NO_FREE_PAGES || ret == ESP_ERR_NVS_NEW_VERSION_FOUND) {
@@ -98,10 +101,12 @@ void app_main(void) {
             vTaskDelay(pdMS_TO_TICKS(3600000));//Wait an hour then push the code again
         }*/
        
-       //v4: Soil Sensor based released
-       ESP_ERROR_CHECK(adc_oneshot_read(adc_handle, ADC_CHANNEL, &adc_raw));
-       ESP_LOGI("TAG", "Current Soil Level: %d ", adc_raw);
-       vTaskDelay(pdMS_TO_TICKS(10000));
+       //v4: Soil Sensor based released that will provide the raw value between 1100-3280 and a converted percent based value
+       ESP_ERROR_CHECK(adc_oneshot_read(adc_handle, ADC_CHANNEL, &soil_raw));
+       ESP_LOGI("TAG", "Current Soil Level: %d ", soil_raw);
+       percentage_sensor = ((MAX_DRY - soil_raw)*100) / (SENSOR_DIFF);
+       ESP_LOGI("TAG", "The soil is %d % wet", percentage_sensor);
+       vTaskDelay(pdMS_TO_TICKS(5000));
 
     }
 }
