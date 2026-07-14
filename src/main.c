@@ -20,7 +20,7 @@
 #define ADC_ATTENUATION ADC_ATTEN_DB_12
 #define LOW_WET     1100 //The lowest value the sensor can read meaning its submerged  
 #define MAX_DRY     3280 //The max value the sensor can read, a high value means dry soil
-#define SENSOR_DIFF 2180 //Difference betweene the Max-low used to calculate eprcentage
+#define SENSOR_DIFF 2180 //Difference between the Max-low used to calculate eprcentage
 
 
 void app_main(void) {
@@ -34,7 +34,7 @@ void app_main(void) {
     }
     ESP_ERROR_CHECK(ret);
 
-    adc_oneshot_unit_handle_t adc_handle;
+      adc_oneshot_unit_handle_t adc_handle;
     adc_oneshot_unit_init_cfg_t init_config = {
         .unit_id = ADC_UNIT,
     };
@@ -80,7 +80,7 @@ void app_main(void) {
 
     while (1) {
 
-        /*//V1: Push Button Water Release Code
+        //V1: Push Button Water Release Code
          if (gpio_get_level(BUTTON_PIN) == 0) {
             gpio_set_level(PUMP_PIN, 1);
             gpio_set_level(LED_PIN, 1);
@@ -88,7 +88,7 @@ void app_main(void) {
             gpio_set_level(PUMP_PIN, 0);
             gpio_set_level(LED_PIN, 0);
         }
-
+        /*
         //V2: Timed Water Release Code Based off MCU Uptime
         uint64_t localUptime = esp_timer_get_time();
         {
@@ -106,6 +106,15 @@ void app_main(void) {
        ESP_LOGI("TAG", "Current Soil Level: %d ", soil_raw);
        percentage_sensor = ((MAX_DRY - soil_raw)*100) / (SENSOR_DIFF);
        ESP_LOGI("TAG", "The soil is %d % wet", percentage_sensor);
+        
+       if(percentage_sensor <= 5){
+            gpio_set_level(PUMP_PIN, 1);
+            gpio_set_level(LED_PIN, 1);
+            vTaskDelay(pdMS_TO_TICKS(3000));
+            gpio_set_level(PUMP_PIN, 0);
+            gpio_set_level(LED_PIN, 0);
+            ESP_LOGI("TAG", "Plant has been watered");
+       }
        vTaskDelay(pdMS_TO_TICKS(5000));
 
     }
