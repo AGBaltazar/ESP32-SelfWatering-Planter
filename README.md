@@ -17,6 +17,7 @@ Jumper Wires
 Air Purifier Shell
 
 ## Wiring Setup 
+### Sumbersible Pump
 ESP32 GPIO4 → 100Ω resistor → MOSFET Gate
 
 10kΩ resistor → Gate to GND (pull-down)
@@ -28,6 +29,15 @@ MOSFET Drain → Flyback Diode → Pump (−)
 Pump (+) → Flyback Diode → 12V supply (+)
 
 12V supply (−) → same GND rail as ESP32
+
+### Water Sensor
+Sensor GND → GND
+
+Sensor 3V3 → 3V3
+
+Sensor S → GPIO 33 (ADC Channel 5)
+
+### Light Sensor
 
 
 ## Peripherals Utilized
@@ -44,7 +54,7 @@ GPIO Input for the Button
 - [ ] Setup optional timed releases
 - [ ] Enable custom timed releases
 - [ ] Add on Buck Converter for standalone power
-- [ ] Add soil sensor for automated releases
+- [x] Add soil sensor for automated releases
 - [ ] Add on I2C Light Sensor
 - [ ] Add on Display over SPI
 - [ ] Setup touch display
@@ -55,12 +65,25 @@ GPIO Input for the Button
 ~~Turning on the water pump at the push of a button~~
 
 ### Phase 2
-Setup timers to release water at controlled intervals such as specific times
+~~Setup timers to release water at controlled intervals such as specific times~~
 
 ### Phase 3
-Utilize the ESP32's built in wifi to remotely power the pump
+~~Utilize the ESP32's built in wifi to remotely power the pump~~
 
 ### Phase 4
 Install a DC to DC Buck Converter to allow the MCU to get power
 
-Install a Soil Sensor and allow the MCU to water when dry
+~~Install a Soil Sensor and allow the MCU to water when ~~dry~~
+
+### Phase 5
+Install I2C light sensor to allow for releases during Dusk when water can be retained
+
+### Phase 6
+Install a touchscreen that shows data such as:
+- [] Current Soil Wetness
+- [] Last Watered
+- [] Push Button Override
+- [] Current Light Levels
+
+### Phase 7 (Final)
+- [] Customer Enclosure and 3D printed adapters
