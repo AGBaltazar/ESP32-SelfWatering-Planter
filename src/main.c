@@ -11,6 +11,7 @@
 #include "../secrets.h"
 #include "./components/wifi.h"
 #include "esp_adc/adc_oneshot.h"
+#include "./components/light_sensor.h"
 
 #define LED_PIN     GPIO_NUM_2
 #define BUTTON_PIN  GPIO_NUM_0 
@@ -34,7 +35,8 @@ void app_main(void) {
     }
     ESP_ERROR_CHECK(ret);
 
-      adc_oneshot_unit_handle_t adc_handle;
+    //Initilizatoin of the Soil Sensor ADC
+    adc_oneshot_unit_handle_t adc_handle;
     adc_oneshot_unit_init_cfg_t init_config = {
         .unit_id = ADC_UNIT,
     };
@@ -47,6 +49,27 @@ void app_main(void) {
     };
 
     ESP_ERROR_CHECK(adc_oneshot_config_channel(adc_handle, ADC_CHANNEL, &config));
+
+    //Initilization of the Light Sensor I2C
+    uint8_t light_data[2];
+    uint8_t data_reg;
+    uint8_t pwr_reg;
+    data_reg = VEML7700_ALS_REG;
+    pwr_reg = VEML7700_PWR_REG;
+    uint8_t pwr_cmd[3] = {pwr_reg, 0x00, 0x00};
+    i2c_master_bus_handle_t bus_handle;
+    i2c_master_dev_handle_t dev_handle;
+    i2c_master_init(&bus_handle, &dev_handle);
+    ESP_LOGI(TAG, "I2C initialized successfully");
+
+    
+    ESP_ERROR_CHECK(i2c_master_transmit(dev_handle, pwr_cmd, 3, I2C_MASTER_TIMEOUT_MS));
+    vTaskDelay(pdMS_TO_TICKS(100));
+
+    ESP_ERROR_CHECK(i2c_master_transmit_receive(dev_handle, &data_reg, 1, light_data, 2, I2C_MASTER_TIMEOUT_MS));
+    ESP_LOGI(TAG, "WHO_AM_I = %X", light_data[0], light_data[1]);
+    uint16_t lux_raw = (light_data[1] << 8) | light_data[0];
+    ESP_LOGI(TAG, "RAW DATA: %X", lux_raw);
 
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
     gpio_set_direction(PUMP_PIN, GPIO_MODE_OUTPUT);
