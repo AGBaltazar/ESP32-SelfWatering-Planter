@@ -56,7 +56,7 @@ void app_main(void) {
     uint8_t pwr_reg;
     data_reg = VEML7700_ALS_REG;
     pwr_reg = VEML7700_PWR_REG;
-    uint8_t pwr_cmd[3] = {pwr_reg, 0x00, 0x00};
+    uint8_t pwr_cmd[3] = {pwr_reg, 0x00, 0x00}; //3 Bytes are being sent to turn the power register on
     i2c_master_bus_handle_t bus_handle;
     i2c_master_dev_handle_t dev_handle;
     i2c_master_init(&bus_handle, &dev_handle);
@@ -65,11 +65,6 @@ void app_main(void) {
     
     ESP_ERROR_CHECK(i2c_master_transmit(dev_handle, pwr_cmd, 3, I2C_MASTER_TIMEOUT_MS));
     vTaskDelay(pdMS_TO_TICKS(100));
-
-    ESP_ERROR_CHECK(i2c_master_transmit_receive(dev_handle, &data_reg, 1, light_data, 2, I2C_MASTER_TIMEOUT_MS));
-    ESP_LOGI(TAG, "WHO_AM_I = %X", light_data[0], light_data[1]);
-    uint16_t lux_raw = (light_data[1] << 8) | light_data[0];
-    ESP_LOGI(TAG, "RAW DATA: %X", lux_raw);
 
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
     gpio_set_direction(PUMP_PIN, GPIO_MODE_OUTPUT);
@@ -129,8 +124,16 @@ void app_main(void) {
        ESP_LOGI("TAG", "Current Soil Level: %d ", soil_raw);
        percentage_sensor = ((MAX_DRY - soil_raw)*100) / (SENSOR_DIFF);
        ESP_LOGI("TAG", "The soil is %d % wet", percentage_sensor);
-        
-       if(percentage_sensor <= 5){
+
+       //v5: Soil Sensor along with scanning of the light to release the water in optimal times
+       vTaskDelay(pdMS_TO_TICKS(200)); //Delay is utilized to stabilize the data
+       ESP_ERROR_CHECK(i2c_master_transmit_receive(dev_handle, &data_reg, 1, light_data, 2, I2C_MASTER_TIMEOUT_MS));
+       uint16_t lux_raw = (light_data[1] << 8) | light_data[0];
+       float lux_converted = (lux_raw * VEML7700_RESOLUTION);
+       ESP_LOGI(LOG, "Converted Data: %.2f Raw Data: %d", lux_converted, lux_raw); 
+
+       //If the soil is dry and under 5% AND it is bright out then water
+       if(percentage_sensor <= 5 && lux_converted >= 500){
             gpio_set_level(PUMP_PIN, 1);
             gpio_set_level(LED_PIN, 1);
             vTaskDelay(pdMS_TO_TICKS(3000));

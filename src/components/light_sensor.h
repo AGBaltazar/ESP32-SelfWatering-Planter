@@ -2,6 +2,9 @@
 //https://docs.espressif.com/projects/esp-idf/en/v5.1/esp32/api-reference/peripherals/i2c.html
 #include "driver/i2c_master.h"
 
+static const char *LOG = "veml7700_sensor";
+
+
 #define I2C_MASTER_SCL_IO           GPIO_NUM_16    /*!< GPIO number used for I2C master clock */
 #define I2C_MASTER_SDA_IO           GPIO_NUM_17     /*!< GPIO number used for I2C master data  */
 #define I2C_MASTER_NUM              I2C_NUM_0       /*!< I2C port number for master dev */
@@ -12,6 +15,7 @@
 #define VEML7700_DEVICE_ID           0x07        /*!< Device ID of the VEML7700 sensor */
 #define VEML7700_ALS_REG            0x04        /*!< Ambient Light Singal (ALS) of the VEML7700 sensor */
 #define VEML7700_PWR_REG            0X00        /*!< Register utilized for turnning the sensor off/on*/
+#define VEML7700_RESOLUTION         0.0576      /*!< Reloution multiplier used to convert the raw lux*/
 
 
 static void i2c_master_init(i2c_master_bus_handle_t *bus_handle, i2c_master_dev_handle_t *dev_handle)
