@@ -1,5 +1,9 @@
 # Description
-After burning uot an STM32 with this project and not having an extra, this repo holds the code to power a submersible water pump utilizing an ESP32 Base
+After burning out an STM32 with this project and not having an extra, this repo holds the code to power a submersible water pump utilizing an ESP32 Base.
+
+Add ons here would include a VEML7700 light sensor along with a soil sensor for autonomous releases.
+
+In the works would be a Touch Screen along with customer 3D printed enclosure.
 
 ## Tools Utilized
 ESP32 Board (Base)
@@ -31,14 +35,20 @@ Pump (+) → Flyback Diode → 12V supply (+)
 12V supply (−) → same GND rail as ESP32
 
 ### Water Sensor
-Sensor GND → GND
+Sensor GND → ESP32 GND
 
-Sensor 3V3 → 3V3
+Sensor 3V3 → ESP32 3V3
 
 Sensor S → GPIO 33 (ADC Channel 5)
 
-### Light Sensor
+### Light Sensor (VEML 7700)
+SCL → GPIO 16
 
+SDA → GPIO 17
+
+GND → ESP32 GND
+
+VDD → ESP32 3V3
 
 ## Peripherals Utilized
 GPIO Output for the LED and Pump
@@ -55,7 +65,7 @@ GPIO Input for the Button
 - [ ] Enable custom timed releases
 - [ ] Add on Buck Converter for standalone power
 - [x] Add soil sensor for automated releases
-- [ ] Add on I2C Light Sensor
+- [x] Add on I2C Light Sensor
 - [ ] Add on Display over SPI
 - [ ] Setup touch display
 
@@ -73,10 +83,10 @@ GPIO Input for the Button
 ### Phase 4
 Install a DC to DC Buck Converter to allow the MCU to get power
 
-~~Install a Soil Sensor and allow the MCU to water when ~~dry~~
+~~Install a Soil Sensor and allow the MCU to water when dry~~
 
 ### Phase 5
-Install I2C light sensor to allow for releases during Dusk when water can be retained
+~~Install I2C light sensor to allow for releases during daytime~~
 
 ### Phase 6
 Install a touchscreen that shows data such as:
