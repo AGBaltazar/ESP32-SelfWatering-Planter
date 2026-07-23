@@ -5,13 +5,15 @@
 #include "esp_timer.h"
 #include "esp_wifi.h"
 #include "esp_event.h"
-#include "esp_log.h"
 #include "nvs_flash.h"
 #include "esp_http_server.h"
 #include "../secrets.h"
 #include "./components/wifi.h"
 #include "esp_adc/adc_oneshot.h"
 #include "./components/light_sensor.h"
+#include "./components/touchscreen.h"
+#include "esp_lcd_panel_ops.h"
+
 
 #define LED_PIN     GPIO_NUM_2
 #define BUTTON_PIN  GPIO_NUM_0 
@@ -65,6 +67,9 @@ void app_main(void) {
     
     ESP_ERROR_CHECK(i2c_master_transmit(dev_handle, pwr_cmd, 3, I2C_MASTER_TIMEOUT_MS));
     vTaskDelay(pdMS_TO_TICKS(100));
+
+    //V5 LCD Initilization
+    lcd_init();
 
     gpio_set_direction(LED_PIN, GPIO_MODE_OUTPUT);
     gpio_set_direction(PUMP_PIN, GPIO_MODE_OUTPUT);
